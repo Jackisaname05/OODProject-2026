@@ -68,6 +68,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ApiModels\ComicVineCharacterDetail.cs" />
+    <Compile Include="ApiModels\ComicVineImage.cs" />
+    <Compile Include="ApiModels\ComicVineIssue.cs" />
+    <Compile Include="ApiModels\ComicVineListResponse.cs" />
+    <Compile Include="ApiModels\ComicVineResponse.cs" />
+    <Compile Include="ApiModels\ComicVineVolume.cs" />
     <Compile Include="Services\CharacterRepository.cs" />
     <Compile Include="Services\ComicVineService.cs" />
     <Compile Include="Services\ICharacterRepository.cs" />
@@ -125,7 +131,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="ApiModels\" />
     <Folder Include="ViewModels\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
