@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using OODProject_2026.ViewModels;
 
 namespace OODProject_2026
 {
@@ -20,9 +21,18 @@ namespace OODProject_2026
     /// </summary>
     public partial class MainWindow : Window
     {
+        private readonly MainViewModel _vm;
         public MainWindow()
         {
             InitializeComponent();
+            _vm = new MainViewModel();
+            DataContext = _vm;
+        }
+
+        private void Search_Click(object sender, RoutedEventArgs e)
+        {
+            if (_vm == null) return;
+            _vm.SearchCharacters();
         }
     }
 }

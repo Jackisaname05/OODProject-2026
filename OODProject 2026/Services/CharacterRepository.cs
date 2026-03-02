@@ -41,6 +41,8 @@ namespace OODProject_2026.Services
             using (var db = new AppDbContext())
             {
                 db.Characters.Add(character);
+                character.CreatedAt = System.DateTime.Now;
+                character.UpdatedAt = System.DateTime.Now;
                 db.SaveChanges();
             }
         }

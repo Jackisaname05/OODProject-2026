@@ -5,8 +5,113 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:OODProject_2026"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
-        
+        Title="MainWindow" Height="700" Width="1100">
+    <Grid Margin="10">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="300"/>
+            <ColumnDefinition Width="10"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- LEFT: Character list + search -->
+        <Border Grid.Column="0" BorderBrush="Gray" BorderThickness="1" Padding="8">
+            <DockPanel>
+                <TextBlock DockPanel.Dock="Top" Text="Characters" FontSize="16" FontWeight="Bold" Margin="0,0,0,8"/>
+
+                <StackPanel DockPanel.Dock="Top" Margin="0,0,0,8">
+                    <TextBox x:Name="txtSearch" Height="26" Margin="0,0,0,6"
+                             Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"/>
+
+                    <ComboBox x:Name="cmbPublisher" Height="26" Margin="0,0,0,6"
+                              SelectedItem="{Binding PublisherFilter}">
+                        <ComboBoxItem Content="All"/>
+                        <ComboBoxItem Content="Marvel Comics"/>
+                        <ComboBoxItem Content="DC Comics"/>
+                        <ComboBoxItem Content="Image Comics"/>
+                    </ComboBox>
+
+                    <Button Content="Search" Height="28" Click="Search_Click"/>
+                </StackPanel>
+
+                <ListBox ItemsSource="{Binding Characters}"
+                         SelectedItem="{Binding SelectedCharacter, Mode=TwoWay}"
+                         DisplayMemberPath="Name"/>
+            </DockPanel>
+        </Border>
+
+        <!-- RIGHT: Details + Runs + Appearances -->
+        <Grid Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="10"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Character details (from LocalDB) -->
+            <Border Grid.Row="0" BorderBrush="Gray" BorderThickness="1" Padding="10">
+                <StackPanel>
+                    <TextBlock Text="{Binding SelectedCharacter.Name}" FontSize="20" FontWeight="Bold"/>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
+                        <TextBlock Text="Debut: " FontWeight="Bold"/>
+                        <TextBlock Text="{Binding SelectedCharacter.DebutYear}"/>
+                        <TextBlock Text="   Publisher: " FontWeight="Bold" Margin="14,0,0,0"/>
+                        <TextBlock Text="{Binding SelectedCharacter.Publisher}"/>
+                    </StackPanel>
+
+                    <TextBlock Text="Description:" FontWeight="Bold" Margin="0,10,0,2"/>
+                    <TextBlock Text="{Binding SelectedCharacter.Description}" TextWrapping="Wrap"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Bottom lists -->
+            <Grid Grid.Row="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="10"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Runs -->
+                <Border Grid.Column="0" BorderBrush="Gray" BorderThickness="1" Padding="8">
+                    <DockPanel>
+                        <TextBlock DockPanel.Dock="Top" Text="Runs (Volumes)" FontSize="14" FontWeight="Bold" Margin="0,0,0,8"/>
+                        <ListBox ItemsSource="{Binding Runs}">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding Name}" FontWeight="Bold"/>
+                                        <TextBlock>
+                                            <Run Text="Start: "/><Run Text="{Binding Start_Year}"/>
+                                            <Run Text=" | Issues: "/><Run Text="{Binding Count_Of_Issues}"/>
+                                        </TextBlock>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </DockPanel>
+                </Border>
+
+                <!-- Appearances -->
+                <Border Grid.Column="2" BorderBrush="Gray" BorderThickness="1" Padding="8">
+                    <DockPanel>
+                        <TextBlock DockPanel.Dock="Top" Text="Appearances (Issue Credits)" FontSize="14" FontWeight="Bold" Margin="0,0,0,8"/>
+                        <ListBox ItemsSource="{Binding Appearances}">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding Name}" FontWeight="Bold"/>
+                                        <TextBlock>
+                                            <Run Text="#"/><Run Text="{Binding Issue_Number}"/>
+                                            <Run Text=" | "/><Run Text="{Binding Cover_Date}"/>
+                                        </TextBlock>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </DockPanel>
+                </Border>
+            </Grid>
+        </Grid>
     </Grid>
 </Window>

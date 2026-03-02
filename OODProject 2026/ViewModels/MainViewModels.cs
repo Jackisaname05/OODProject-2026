@@ -1,15 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using System.Windows;
-using OODProject_2026.ApiModels;
+﻿using OODProject_2026.ApiModels;
 using OODProject_2026.Models;
 using OODProject_2026.Services;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using static System.Net.Mime.MediaTypeNames;
 
 
 
@@ -65,7 +66,14 @@ namespace OODProject_2026.ViewModels
 
         public void SearchCharacters()
         {
+            var text = (SearchText ?? string.Empty).Trim();
+
             Characters.Clear();
+
+            var results = string.IsNullOrWhiteSpace(text)
+        ? _repo.GetAllCharacters()
+        : _repo.Search(text, PublisherFilter);
+
             foreach (var c in _repo.Search(SearchText, PublisherFilter))
                 Characters.Add(c);
         }
@@ -87,7 +95,7 @@ namespace OODProject_2026.ViewModels
                 var runs = await runsTask;
                 var apps = await appTask;
 
-                Application.Current.Dispatcher.Invoke(() =>
+                System.Windows.Application.Current.Dispatcher.Invoke(() =>
                 {
                     Runs.Clear();
                     foreach (var r in runs) Runs.Add(r);
