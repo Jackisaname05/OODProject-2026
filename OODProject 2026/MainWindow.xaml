@@ -3,115 +3,503 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:OODProject_2026"
+        xmlns:helpers="clr-namespace:OODProject_2026.Helpers"
         mc:Ignorable="d"
-        Title="MainWindow" Height="700" Width="1100">
-    <Grid Margin="10">
+        Title="Comic Character Browser"
+        Height="760"
+        Width="1200"
+        MinHeight="680"
+        MinWidth="1050"
+        Background="#0B0B0B">
+
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+
+        <Style x:Key="PanelBorderStyle" TargetType="Border">
+            <Setter Property="BorderBrush" Value="#2E2E2E"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Background" Value="#0F0F0F"/>
+            <Setter Property="CornerRadius" Value="14"/>
+        </Style>
+
+        <Style x:Key="InputTextBoxStyle" TargetType="TextBox">
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="Background" Value="#161616"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderBrush" Value="#353535"/>
+            <Setter Property="Margin" Value="0,0,0,8"/>
+        </Style>
+
+        <Style x:Key="InputComboBoxStyle" TargetType="ComboBox">
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="Background" Value="#161616"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderBrush" Value="#353535"/>
+            <Setter Property="Margin" Value="0,0,0,8"/>
+        </Style>
+
+        <Style x:Key="DarkButtonStyle" TargetType="Button">
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="Background" Value="#202020"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderBrush" Value="#3A3A3A"/>
+            <Setter Property="Padding" Value="10,4"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+
+        <Style x:Key="CardItemStyle" TargetType="ListBoxItem">
+            <Setter Property="Margin" Value="0,0,0,8"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <Border x:Name="Bd"
+                                Background="#171717"
+                                BorderBrush="#2E2E2E"
+                                BorderThickness="1"
+                                CornerRadius="10"
+                                Padding="10">
+                            <ContentPresenter/>
+                        </Border>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="#5A5A5A"/>
+                            </Trigger>
+
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="#D34A38"/>
+                                <Setter TargetName="Bd" Property="Background" Value="#211817"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="HorizontalCardItemStyle" TargetType="ListBoxItem">
+            <Setter Property="Margin" Value="0,0,16,0"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <Border x:Name="Bd"
+                                Width="230"
+                                Background="#171717"
+                                BorderBrush="#2E2E2E"
+                                BorderThickness="1"
+                                CornerRadius="14"
+                                Padding="12">
+                            <ContentPresenter/>
+                        </Border>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="#D34A38"/>
+                                <Setter TargetName="Bd" Property="Background" Value="#1D1716"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="BadgeBorderStyle" TargetType="Border">
+            <Setter Property="Background" Value="#252525"/>
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="Padding" Value="9,5"/>
+            <Setter Property="Margin" Value="0,0,8,0"/>
+        </Style>
+
+        <Style x:Key="BadgeTextStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+
+        <Style x:Key="SectionTitleStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+
+        <DataTemplate x:Key="RunCardTemplate">
+            <Grid Width="206">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="170"/>
+                    <RowDefinition Height="12"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <Border Grid.Row="0"
+                        CornerRadius="12"
+                        Background="#111111"
+                        BorderBrush="#303030"
+                        BorderThickness="1"
+                        ClipToBounds="True">
+                    <Grid>
+                        <StackPanel HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Margin="10">
+                            <TextBlock Text="▧"
+                                       Foreground="#555555"
+                                       FontSize="34"
+                                       HorizontalAlignment="Center"/>
+
+                            <TextBlock Text="Cover unavailable"
+                                       Foreground="#9F9F9F"
+                                       FontSize="12"
+                                       TextAlignment="Center"/>
+                        </StackPanel>
+
+                        <Image Stretch="UniformToFill"
+                               helpers:ComicVineImageLoader.ImageUrl="{Binding Image.MediumUrl, TargetNullValue=''}"/>
+
+                        <Border Background="#77000000"
+                                VerticalAlignment="Bottom"
+                                Padding="8,7">
+                            <TextBlock Text="{Binding Name}"
+                                       Foreground="White"
+                                       FontWeight="Bold"
+                                       TextWrapping="Wrap"
+                                       MaxHeight="42"/>
+                        </Border>
+                    </Grid>
+                </Border>
+
+                <StackPanel Grid.Row="2">
+                    <TextBlock Foreground="#F1F1F1"
+                               FontWeight="Bold"
+                               Text="{Binding Name}"
+                               TextWrapping="Wrap"
+                               MaxHeight="42"/>
+
+                    <Grid Margin="0,8,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Border Grid.Column="0"
+                                Background="#252525"
+                                CornerRadius="9"
+                                Padding="7,5"
+                                Margin="0,0,5,0">
+                            <StackPanel>
+                                <TextBlock Text="Year"
+                                           Foreground="#AFAFAF"
+                                           FontSize="11"/>
+                                <TextBlock Text="{Binding Start_Year}"
+                                           Foreground="White"
+                                           FontWeight="Bold"/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Grid.Column="1"
+                                Background="#252525"
+                                CornerRadius="9"
+                                Padding="7,5"
+                                Margin="5,0,0,0">
+                            <StackPanel>
+                                <TextBlock Text="Issues"
+                                           Foreground="#AFAFAF"
+                                           FontSize="11"/>
+                                <TextBlock Text="{Binding Count_Of_Issues}"
+                                           Foreground="White"
+                                           FontWeight="Bold"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </StackPanel>
+            </Grid>
+        </DataTemplate>
+    </Window.Resources>
+
+    <Grid Margin="12">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="300"/>
-            <ColumnDefinition Width="10"/>
+            <ColumnDefinition Width="310"/>
+            <ColumnDefinition Width="12"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <!-- LEFT: Character list + search -->
-        <Border Grid.Column="0" BorderBrush="Gray" BorderThickness="1" Padding="8">
+        <!-- LEFT PANEL -->
+        <Border Grid.Column="0"
+                Style="{StaticResource PanelBorderStyle}"
+                Padding="12">
             <DockPanel>
-                <TextBlock DockPanel.Dock="Top" Text="Characters" FontSize="16" FontWeight="Bold" Margin="0,0,0,8"/>
+                <TextBlock DockPanel.Dock="Top"
+                           Text="Characters"
+                           FontSize="18"
+                           FontWeight="Bold"
+                           Foreground="White"
+                           Margin="0,0,0,12"/>
 
-                <StackPanel DockPanel.Dock="Top" Margin="0,0,0,8">
-                    <TextBox x:Name="txtSearch" Height="26" Margin="0,0,0,6"
+                <StackPanel DockPanel.Dock="Top"
+                            Margin="0,0,0,12">
+                    <TextBlock Text="Search"
+                               Foreground="#BFBFBF"
+                               FontSize="12"
+                               Margin="2,0,0,4"/>
+
+                    <TextBox Style="{StaticResource InputTextBoxStyle}"
+                             Padding="8,4"
                              Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"/>
 
-                    <ComboBox x:Name="cmbPublisher" Height="26" Margin="0,0,0,6"
-                              SelectedItem="{Binding PublisherFilter}">
-                        <ComboBoxItem Content="All"/>
-                        <ComboBoxItem Content="Marvel Comics"/>
-                        <ComboBoxItem Content="DC Comics"/>
-                        <ComboBoxItem Content="Image Comics"/>
-                    </ComboBox>
+                    <TextBlock Text="Publisher"
+                               Foreground="#BFBFBF"
+                               FontSize="12"
+                               Margin="2,0,0,4"/>
 
-                    <Button Content="Search" Height="28" Click="Search_Click"/>
+                    <ComboBox Style="{StaticResource InputComboBoxStyle}"
+                              ItemsSource="{Binding Publishers}"
+                              SelectedItem="{Binding PublisherFilter, Mode=TwoWay}"/>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="8"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Button Grid.Column="0"
+                                Content="Search"
+                                Style="{StaticResource DarkButtonStyle}"
+                                Click="Search_Click"/>
+
+                        <Button Grid.Column="2"
+                                Content="Clear Filters"
+                                Style="{StaticResource DarkButtonStyle}"
+                                Click="ClearFilters_Click"/>
+                    </Grid>
                 </StackPanel>
 
                 <ListBox ItemsSource="{Binding Characters}"
                          SelectedItem="{Binding SelectedCharacter, Mode=TwoWay}"
-                         DisplayMemberPath="Name"/>
+                         ItemContainerStyle="{StaticResource CardItemStyle}"
+                         Background="#0F0F0F"
+                         BorderThickness="0"
+                         ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel>
+                                <TextBlock Text="{Binding Name}"
+                                           FontWeight="Bold"
+                                           Foreground="White"
+                                           FontSize="14"
+                                           TextWrapping="Wrap"/>
+
+                                <TextBlock Foreground="#CFCFCF"
+                                           Margin="0,4,0,0">
+                                    <Run Text="{Binding Publisher}"/>
+                                    <Run Text="  •  Debut: "/>
+                                    <Run Text="{Binding DebutYear}"/>
+                                </TextBlock>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
             </DockPanel>
         </Border>
 
-        <!-- RIGHT: Details + Runs + Appearances -->
+        <!-- RIGHT PANEL -->
         <Grid Grid.Column="2">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
-                <RowDefinition Height="10"/>
+                <RowDefinition Height="12"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <!-- Character details (from LocalDB) -->
-            <Border Grid.Row="0" BorderBrush="Gray" BorderThickness="1" Padding="10">
+            <!-- CHARACTER DETAILS -->
+            <Border Grid.Row="0"
+                    Style="{StaticResource PanelBorderStyle}"
+                    Padding="14">
                 <StackPanel>
-                    <TextBlock Text="{Binding SelectedCharacter.Name}" FontSize="20" FontWeight="Bold"/>
+                    <TextBlock Text="{Binding SelectedCharacter.Name}"
+                               FontSize="26"
+                               FontWeight="Bold"
+                               Foreground="White"
+                               TextWrapping="Wrap"/>
 
-                    <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
-                        <TextBlock Text="Debut: " FontWeight="Bold"/>
-                        <TextBlock Text="{Binding SelectedCharacter.DebutYear}"/>
-                        <TextBlock Text="   Publisher: " FontWeight="Bold" Margin="14,0,0,0"/>
-                        <TextBlock Text="{Binding SelectedCharacter.Publisher}"/>
+                    <StackPanel Orientation="Horizontal"
+                                Margin="0,10,0,0">
+                        <Border Style="{StaticResource BadgeBorderStyle}">
+                            <TextBlock Style="{StaticResource BadgeTextStyle}">
+                                <Run Text="Debut: " FontWeight="Bold"/>
+                                <Run Text="{Binding SelectedCharacter.DebutYear}"/>
+                            </TextBlock>
+                        </Border>
+
+                        <Border Style="{StaticResource BadgeBorderStyle}">
+                            <TextBlock Style="{StaticResource BadgeTextStyle}">
+                                <Run Text="Years Since Debut: " FontWeight="Bold"/>
+                                <Run Text="{Binding SelectedCharacter.YearsSinceDebut, Mode=OneWay}"/>
+                            </TextBlock>
+                        </Border>
+
+                        <Border Style="{StaticResource BadgeBorderStyle}">
+                            <TextBlock Style="{StaticResource BadgeTextStyle}">
+                                <Run Text="Publisher: " FontWeight="Bold"/>
+                                <Run Text="{Binding SelectedCharacter.Publisher}"/>
+                            </TextBlock>
+                        </Border>
                     </StackPanel>
 
-                    <TextBlock Text="Description:" FontWeight="Bold" Margin="0,10,0,2"/>
-                    <TextBlock Text="{Binding SelectedCharacter.Description}" TextWrapping="Wrap"/>
+                    <TextBlock Text="Description"
+                               Margin="0,14,0,5"
+                               FontWeight="Bold"
+                               Foreground="#DADADA"/>
+
+                    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                                  MaxHeight="130">
+                        <TextBlock Text="{Binding SelectedCharacter.Description}"
+                                   TextWrapping="Wrap"
+                                   Foreground="#EAEAEA"
+                                   LineHeight="20"/>
+                    </ScrollViewer>
+
+                    <Border Margin="0,12,0,0"
+                            Background="#2A1715"
+                            BorderBrush="#6A2C24"
+                            BorderThickness="1"
+                            CornerRadius="10"
+                            Padding="10"
+                            Visibility="{Binding HasInlineError, Converter={StaticResource BoolToVisibilityConverter}}">
+                        <TextBlock Text="{Binding InlineErrorMessage}"
+                                   Foreground="#FFD7D1"
+                                   TextWrapping="Wrap"/>
+                    </Border>
                 </StackPanel>
             </Border>
 
-            <!-- Bottom lists -->
-            <Grid Grid.Row="2">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="10"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
+            <!-- RUNS SECTION -->
+            <Border Grid.Row="2"
+                    Style="{StaticResource PanelBorderStyle}"
+                    Padding="12">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="12"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
 
-                <!-- Runs -->
-                <Border Grid.Column="0" BorderBrush="Gray" BorderThickness="1" Padding="8">
-                    <DockPanel>
-                        <TextBlock DockPanel.Dock="Top" Text="Runs (Volumes)" FontSize="14" FontWeight="Bold" Margin="0,0,0,8"/>
-                        <ListBox ItemsSource="{Binding Runs}">
-                            <ListBox.ItemTemplate>
-                                <DataTemplate>
-                                    <StackPanel>
-                                        <TextBlock Text="{Binding Name}" FontWeight="Bold"/>
-                                        <TextBlock>
-                                            <Run Text="Start: "/><Run Text="{Binding Start_Year}"/>
-                                            <Run Text=" | Issues: "/><Run Text="{Binding Count_Of_Issues}"/>
-                                        </TextBlock>
-                                    </StackPanel>
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-                        </ListBox>
-                    </DockPanel>
-                </Border>
+                    <Grid Grid.Row="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="190"/>
+                        </Grid.ColumnDefinitions>
 
-                <!-- Appearances -->
-                <Border Grid.Column="2" BorderBrush="Gray" BorderThickness="1" Padding="8">
-                    <DockPanel>
-                        <TextBlock DockPanel.Dock="Top" Text="Appearances (Issue Credits)" FontSize="14" FontWeight="Bold" Margin="0,0,0,8"/>
-                        <ListBox ItemsSource="{Binding Appearances}">
-                            <ListBox.ItemTemplate>
-                                <DataTemplate>
-                                    <StackPanel>
-                                        <TextBlock Text="{Binding Name}" FontWeight="Bold"/>
-                                        <TextBlock>
-                                            <Run Text="#"/><Run Text="{Binding Issue_Number}"/>
-                                            <Run Text=" | "/><Run Text="{Binding Cover_Date}"/>
-                                        </TextBlock>
-                                    </StackPanel>
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-                        </ListBox>
-                    </DockPanel>
-                </Border>
-            </Grid>
+                        <StackPanel>
+                            <TextBlock Text="Runs (Volumes)"
+                                       Style="{StaticResource SectionTitleStyle}"/>
+
+                            <TextBlock Text="{Binding RunsLoadedText}"
+                                       Foreground="#AFAFAF"
+                                       Margin="0,3,0,0"/>
+                        </StackPanel>
+
+                        <ComboBox Grid.Column="1"
+                                  Height="32"
+                                  Background="#161616"
+                                  Foreground="White"
+                                  BorderBrush="#353535"
+                                  ItemsSource="{Binding RunSortOptions}"
+                                  SelectedItem="{Binding SelectedRunSortOption, Mode=TwoWay}"/>
+                    </Grid>
+
+                    <!-- LOADING STATE -->
+                    <Border Grid.Row="2"
+                            Background="#111111"
+                            CornerRadius="12"
+                            Padding="24"
+                            Visibility="{Binding IsLoadingRuns, Converter={StaticResource BoolToVisibilityConverter}}">
+                        <StackPanel HorizontalAlignment="Center"
+                                    VerticalAlignment="Center">
+                            <TextBlock Text="⟳"
+                                       Foreground="#D34A38"
+                                       FontSize="34"
+                                       HorizontalAlignment="Center"/>
+
+                            <TextBlock Text="Loading runs..."
+                                       Foreground="White"
+                                       FontSize="16"
+                                       FontWeight="Bold"
+                                       HorizontalAlignment="Center"
+                                       Margin="0,4,0,0"/>
+
+                            <TextBlock Text="ComicVine data is being fetched for the selected character."
+                                       Foreground="#BFBFBF"
+                                       Margin="0,8,0,0"
+                                       HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- EMPTY STATE -->
+                    <Border Grid.Row="2"
+                            Background="#111111"
+                            CornerRadius="12"
+                            Padding="24"
+                            Visibility="{Binding ShowRunsEmptyState, Converter={StaticResource BoolToVisibilityConverter}}">
+                        <StackPanel HorizontalAlignment="Center"
+                                    VerticalAlignment="Center">
+                            <TextBlock Text="□"
+                                       Foreground="#777777"
+                                       FontSize="34"
+                                       HorizontalAlignment="Center"/>
+
+                            <TextBlock Text="No runs found"
+                                       Foreground="White"
+                                       FontSize="16"
+                                       FontWeight="Bold"
+                                       HorizontalAlignment="Center"/>
+
+                            <TextBlock Text="Try another character or broaden the search."
+                                       Foreground="#BFBFBF"
+                                       Margin="0,8,0,0"
+                                       HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- NO CHARACTER SELECTED STATE -->
+                    <Border Grid.Row="2"
+                            Background="#111111"
+                            CornerRadius="12"
+                            Padding="24"
+                            Visibility="{Binding ShowNoCharacterState, Converter={StaticResource BoolToVisibilityConverter}}">
+                        <StackPanel HorizontalAlignment="Center"
+                                    VerticalAlignment="Center">
+                            <TextBlock Text="Select a character"
+                                       Foreground="White"
+                                       FontSize="16"
+                                       FontWeight="Bold"
+                                       HorizontalAlignment="Center"/>
+
+                            <TextBlock Text="Use the list on the left to view details and ComicVine runs."
+                                       Foreground="#BFBFBF"
+                                       Margin="0,8,0,0"
+                                       HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- RUN LIST -->
+                    <ListBox Grid.Row="2"
+                             ItemsSource="{Binding Runs}"
+                             Background="#0F0F0F"
+                             BorderThickness="0"
+                             ItemTemplate="{StaticResource RunCardTemplate}"
+                             ItemContainerStyle="{StaticResource HorizontalCardItemStyle}"
+                             ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                             ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                             ScrollViewer.CanContentScroll="False"
+                             SelectionMode="Single"
+                             Visibility="{Binding ShowRunList, Converter={StaticResource BoolToVisibilityConverter}}">
+                        <ListBox.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal"/>
+                            </ItemsPanelTemplate>
+                        </ListBox.ItemsPanel>
+                    </ListBox>
+                </Grid>
+            </Border>
         </Grid>
     </Grid>
-</Window>
+    </Window>

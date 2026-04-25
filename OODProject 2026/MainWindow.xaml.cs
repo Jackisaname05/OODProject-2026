@@ -34,5 +34,11 @@ namespace OODProject_2026
             if (_vm == null) return;
             _vm.SearchCharacters();
         }
+
+        private void ClearFilters_Click(object sender, RoutedEventArgs e)
+        {
+            if (_vm == null) return;
+            _vm.ClearFilters();
+        }
     }
 }
