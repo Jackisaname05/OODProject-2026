@@ -34,7 +34,7 @@ namespace OODProject_2026.Services
                 "&format=json" +
                 "&resources=volume" +
                 "&query=" + Uri.EscapeDataString(searchName.Trim()) +
-                "&field_list=id,name,start_year,count_of_issues,image";
+                "&field_list=id,name,start_year,count_of_issues,image,deck,description,publisher,person_credits";
 
             var body = await GetJsonBodyOrNullAsync(url);
 
@@ -75,6 +75,55 @@ namespace OODProject_2026.Services
                     return null;
 
                 return await response.Content.ReadAsStringAsync();
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        public async Task<ComicVineRunDetails> GetRunDetailsAsync(int volumeId)
+        {
+            if (volumeId <= 0)
+                return null;
+
+            try
+            {
+                string url =
+                    "volume/4050-" + volumeId +
+                    "/?api_key=" + API_KEY +
+                    "&format=json" +
+                    "&field_list=id,name,start_year,count_of_issues,image,deck,description,publisher,person_credits";
+
+                var body = await GetJsonBodyOrNullAsync(url);
+
+                if (string.IsNullOrWhiteSpace(body))
+                    return null;
+
+                var root = JObject.Parse(body);
+
+                int statusCode = root.Value<int?>("status_code") ?? -1;
+
+                if (statusCode != 1)
+                    return null;
+
+                var resultToken = root["results"];
+
+                if (resultToken == null || resultToken.Type == JTokenType.Null)
+                    return null;
+
+                var details = resultToken.ToObject<ComicVineRunDetails>();
+
+                if (details != null)
+                {
+                    if (string.IsNullOrWhiteSpace(details.Deck) &&
+                        string.IsNullOrWhiteSpace(details.Description))
+                    {
+                        details.Description = "No summary was available for this run.";
+                    }
+                }
+
+                return details;
             }
             catch
             {
